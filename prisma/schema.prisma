@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String          @id @default(uuid())
+  firstname String
+  lastname  String
+  email     String          @unique
+  role      Role
+  password  String
+  avatar    String?
+  createdAt DateTime   @default(now())
+   phone     String? 
+   isVerified  Boolean  @default(false) 
+    refreshToken String?      
+
+  accommodations Accommodation[]
+  contacts       Contact[]
+  ratings        Rating[]
+  likes          Likes[]
+}
+
+model Accommodation {
+  id             String          @id @default(uuid())
+  img            Json
+  isActive       Boolean
+  listing_type   ListingType
+  title          String
+  adress         String
+  features       Json
+  price          Float
+  disscount      Float
+  build_year     BigInt
+  description    String
+  documents      Json
+  map_url        String
+  latitude       Float
+  longitude      Float
+  country        String
+  extra_features Json
+  user_id        String
+  category_id    Int
+
+  user     User     @relation(fields: [user_id], references: [id])
+  category Category @relation(fields: [category_id], references: [id])
+  contacts Contact[]
+  ratings  Rating[]
+  likes    Likes[]
+}
+
+model Category {
+  id       Int             @id @default(autoincrement())
+  name     String
+  img      String
+  icon_img String
+
+  accommodations Accommodation[]
+}
+
+model Contact {
+  id               String   @id @default(uuid())
+  date             DateTime
+  time             String
+  name             String
+  phone            String
+  email            String
+  message          String
+  user_id          String
+  accommodation_id String
+
+  user          User         @relation(fields: [user_id], references: [id])
+  accommodation Accommodation @relation(fields: [accommodation_id], references: [id])
+}
+
+model Rating {
+  id               BigInt  @id @default(autoincrement())
+  clean            Float
+  location         Float
+  communicate      Float
+  user_id          String
+  accommodation_id String
+
+  user          User         @relation(fields: [user_id], references: [id])
+  accommodation Accommodation @relation(fields: [accommodation_id], references: [id])
+}
+
+model Likes {
+  id               BigInt  @id @default(autoincrement())
+  like             Boolean
+  user_id          String
+  accommodation_id String
+
+  user          User         @relation(fields: [user_id], references: [id])
+  accommodation Accommodation @relation(fields: [accommodation_id], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ListingType {
+  RENT
+  SALE
+}

@@ -5,18 +5,21 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoryService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
+  // Create
   async create(data: CreateCategoryDto) {
     return this.prisma.category.create({ data });
   }
 
+  // Find all
   async findAll() {
     return this.prisma.category.findMany({
       include: { accommodations: true },
     });
   }
 
+  // Find one by ID
   async findOne(id: number) {
     return this.prisma.category.findUnique({
       where: { id },
@@ -24,6 +27,7 @@ export class CategoryService {
     });
   }
 
+  // Update
   async update(id: number, data: UpdateCategoryDto) {
     return this.prisma.category.update({
       where: { id },
@@ -31,7 +35,17 @@ export class CategoryService {
     });
   }
 
+  // Remove (with foreign key fix)
   async remove(id: number) {
-    return this.prisma.category.delete({ where: { id } });
+    // 1. Avval bog‘langan Accommodation yozuvlarini o‘chiramiz
+    await this.prisma.accommodation.deleteMany({
+      where: { category_id: id },
+    });
+
+
+    // 2. Keyin Category’ni o‘chiramiz
+    return this.prisma.category.delete({
+      where: { id },
+    });
   }
 }

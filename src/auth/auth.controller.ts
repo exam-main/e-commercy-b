@@ -1,7 +1,8 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { SendCodeDto } from './dto/SendCodeDto';
+import { JwtAuthGuard } from 'src/Common/JwtAuthGuard/jwt-auth.guard';  
 
 class RegisterDto {
   firstname: string;
@@ -38,5 +39,13 @@ export class AuthController {
   @ApiOperation({ summary: 'Send verification code to email' })
   sendVerificationCode(@Body() dto: SendCodeDto) {
     return this.authService.sendVerificationCode(dto.email);
+  }
+
+  // Himoyalangan endpoint — faqat token bilan kirish mumkin
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  @ApiOperation({ summary: 'Get logged in user profile' })
+  getProfile(@Request() req) {
+    return req.user;
   }
 }

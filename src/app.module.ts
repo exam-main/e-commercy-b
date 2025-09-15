@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';  // ConfigModule import qilindi
+import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static'; // 🆕 Qo‘shildi
+import { join } from 'path'; // 🆕 path uchun
+
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AccommodationModule } from './accommodation/accommodation.module';
@@ -10,8 +13,16 @@ import { MailModule } from './email/email.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,  // Butun loyihada global qilib beradi, har joyda import qilish shart emas
+      isGlobal: true,
     }),
+
+
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),  
+      serveRoot: '/uploads',
+    }),
+
+    // 🔁 Qolgan modullar
     UserModule,
     PrismaModule,
     AccommodationModule,

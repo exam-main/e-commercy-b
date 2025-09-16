@@ -56,14 +56,22 @@ export class AccommodationService {
     });
   }
 
+  // TO'G'RILANGAN UPDATE METODI
   async update(id: string, data: UpdateAccommodationDto) {
+    const accommodation = await this.prisma.accommodation.findUnique({
+      where: { id },
+    });
+
+    if (!accommodation) {
+      throw new NotFoundException(`Accommodation with id ${id} topilmadi`);
+    }
+
     return this.prisma.accommodation.update({
       where: { id },
       data,
     });
   }
 
-  // TO'G'RILANGAN REMOVE METODI
   async remove(id: string) {
     const accommodation = await this.prisma.accommodation.findUnique({
       where: { id },
